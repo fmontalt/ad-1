@@ -11,6 +11,8 @@ public partial class MainWindow : Gtk.Window
     {
         Build();
 
+        deleteAction.Sensitive = false;
+
         App.Instance.Connection = new MySqlConnection("server=localhost;database=dbprueba;user=root;password=sistemas");
         App.Instance.Connection.Open();
 
@@ -20,6 +22,14 @@ public partial class MainWindow : Gtk.Window
         treeView.Model = listStore;
 
         fillListStore(listStore);
+
+        treeView.Selection.Changed += delegate {
+            deleteAction.Sensitive = treeView.Selection.CountSelectedRows() > 0;
+            //if (treeView.Selection.CountSelectedRows() > 0)
+            //    deleteAction.Sensitive = true;
+            //else
+                //deleteAction.Sensitive = false;
+        };
         
         newAction.Activated += delegate {
             new CategoriaWindow();
@@ -28,6 +38,32 @@ public partial class MainWindow : Gtk.Window
         refreshAction.Activated += delegate {
             fillListStore(listStore);
 		};
+
+        deleteAction.Activated += delegate {
+            MessageDialog messageDialog = new MessageDialog(
+                this,
+                DialogFlags.Modal,
+                MessageType.Question,
+                ButtonsType.YesNo,
+                "¿Quieres eliminar el registro?"
+            );
+
+
+
+            ResponseType response = (ResponseType)messageDialog.Run();
+            messageDialog.Destroy();
+            if (response == ResponseType.Yes) {
+                TreeIter treeIter;
+                treeView.Selection.GetSelected(out treeIter);
+                if (treeIter.Equals(TreeIter.Zero))
+                    Console.WriteLine("Ninguno seleccionado");
+                else
+                    Console.WriteLine("id=" + listStore.GetValue(treeIter, 0));
+                //TODO eliminar
+            }
+            
+
+        };
     }
 
     private void fillListStore(ListStore listStore) {
