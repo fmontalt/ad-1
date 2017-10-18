@@ -10,7 +10,7 @@ public partial class MainWindow : Gtk.Window
     public MainWindow() : base(Gtk.WindowType.Toplevel)
     {
         Build();
-
+        Title = "Categoria";
         deleteAction.Sensitive = false;
 
         App.Instance.Connection = new MySqlConnection("server=localhost;database=dbprueba;user=root;password=sistemas");
@@ -24,7 +24,8 @@ public partial class MainWindow : Gtk.Window
         fillListStore(listStore);
 
         treeView.Selection.Changed += delegate {
-            deleteAction.Sensitive = treeView.Selection.CountSelectedRows() > 0;
+            bool hasSelected = treeView.Selection.CountSelectedRows() > 0;
+            deleteAction.Sensitive = hasSelected;
             //if (treeView.Selection.CountSelectedRows() > 0)
             //    deleteAction.Sensitive = true;
             //else
@@ -40,31 +41,23 @@ public partial class MainWindow : Gtk.Window
 		};
 
         deleteAction.Activated += delegate {
-            MessageDialog messageDialog = new MessageDialog(
-                this,
-                DialogFlags.Modal,
-                MessageType.Question,
-                ButtonsType.YesNo,
-                "¿Quieres eliminar el registro?"
-            );
-
-
-
-            ResponseType response = (ResponseType)messageDialog.Run();
-            messageDialog.Destroy();
-            if (response == ResponseType.Yes) {
-                TreeIter treeIter;
-                treeView.Selection.GetSelected(out treeIter);
-                if (treeIter.Equals(TreeIter.Zero))
-                    Console.WriteLine("Ninguno seleccionado");
-                else
-                    Console.WriteLine("id=" + listStore.GetValue(treeIter, 0));
-                //TODO eliminar
-            }
+            if (WindowHelper.Confirm(this, "¿Quieres eliminar el registro?")) {
+                object id = getId();
+				IDbCommand dbCommand = App.Instance.Connection.CreateCommand();
+				dbCommand.CommandText = "delete from categoria where id = @id";
+				DbCommandHelper.AddParameter(dbCommand, "id", id);
+				dbCommand.ExecuteNonQuery();
+			}
             
 
         };
     }
+
+    private object getId() {
+		TreeIter treeIter;
+		treeView.Selection.GetSelected(out treeIter);
+        return treeView.Model.GetValue(treeIter, 0);
+	}
 
     private void fillListStore(ListStore listStore) {
 		listStore.Clear();
