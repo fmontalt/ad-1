@@ -18,12 +18,7 @@ public partial class MainWindow : Gtk.Window
         App.Instance.Connection = new MySqlConnection("server=localhost;database=dbprueba;user=root;password=sistemas");
         App.Instance.Connection.Open();
 
-        treeView.AppendColumn("id", new CellRendererText(), "text", 0);
-        treeView.AppendColumn("nombre", new CellRendererText(), "text", 1);
-        ListStore listStore = new ListStore(typeof(string), typeof(string));
-        treeView.Model = listStore;
-
-        fillListStore(listStore);
+        TreeViewHelper.Fill(treeView, CategoriaDao.SelectAll);
 
         treeView.Selection.Changed += delegate {
             bool hasSelected = treeView.Selection.CountSelectedRows() > 0;
@@ -47,7 +42,7 @@ public partial class MainWindow : Gtk.Window
 		};
 
         refreshAction.Activated += delegate {
-            fillListStore(listStore);
+			TreeViewHelper.Fill(treeView, CategoriaDao.SelectAll);
 		};
 
         deleteAction.Activated += delegate {
