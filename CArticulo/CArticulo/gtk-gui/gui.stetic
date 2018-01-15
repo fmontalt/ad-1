@@ -73,7 +73,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Window" id="CArticulo.ArticuloWindow" design-size="295 157">
+  <widget class="Gtk.Window" id="CArticulo.ArticuloWindow" design-size="295 161">
     <action-group name="Default">
       <action id="saveAction">
         <property name="Type">Action</property>
@@ -111,11 +111,10 @@
             <property name="RowSpacing">6</property>
             <property name="ColumnSpacing">6</property>
             <child>
-              <widget class="Gtk.Entry" id="entryCategoria">
+              <widget class="Gtk.ComboBox" id="comboBoxCategoria">
                 <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="IsEditable">True</property>
-                <property name="InvisibleChar">•</property>
+                <property name="IsTextCombo">False</property>
+                <property name="Items" translatable="yes" />
               </widget>
               <packing>
                 <property name="TopAttach">2</property>

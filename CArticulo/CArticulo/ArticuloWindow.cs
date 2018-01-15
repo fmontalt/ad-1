@@ -1,4 +1,7 @@
 ﻿using System;
+
+using Serpis.Ad;
+
 namespace CArticulo
 {
     public partial class ArticuloWindow : Gtk.Window
@@ -9,12 +12,18 @@ namespace CArticulo
 
             entryNombre.Text = articulo.Nombre;
             spinButtonPrecio.Value = Convert.ToDouble(articulo.Precio);
-            entryCategoria.Text = articulo.Categoria.ToString();
+
+            ComboBoxHelper.Fill(
+                comboBoxCategoria, 
+                "select id, nombre from categoria order by nombre", 
+                articulo.Categoria
+            );
+            //entryCategoria.Text = articulo.Categoria.ToString();
 
             saveAction.Activated += delegate {
                 articulo.Nombre = entryNombre.Text;
                 articulo.Precio = Convert.ToDecimal(spinButtonPrecio.Value);
-                articulo.Categoria = long.Parse(entryCategoria.Text);
+                //articulo.Categoria = long.Parse(entryCategoria.Text);
                 ArticuloDao.Save(articulo);
                 Destroy();
             };
